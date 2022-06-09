@@ -1,9 +1,9 @@
 /* Global Variables */
 // Personal API Key for OpenWeatherMap API
-const apiKey = "5698a4792771168014e137c1870b3572";
+const apiKey = "5698a4792771168014e137c1870b3572&units=imperial";
 // Create a new date instance dynamically with JS
 let d = new Date();
-let newDate = d.getMonth() + "." + d.getDate() + "." + d.getFullYear();
+let newDate = d.getMonth() + 1 + "." + d.getDate() + "." + d.getFullYear();
 
 let data = {};
 document.getElementById("generate").addEventListener("click", () => {
@@ -20,6 +20,9 @@ document.getElementById("generate").addEventListener("click", () => {
     })
     .then(async () => {
       await retrieveData();
+    })
+    .catch((error) => {
+      alert(error);
     });
 });
 
@@ -29,9 +32,11 @@ const getTemperature = async (code, key) => {
   );
   try {
     const data = await res.json();
-    return data.main.temp;
+    if (data.message == "city not found") throw new Error("Zip Code Not Found");
+    const temp = data.main.temp;
+    return temp;
   } catch (error) {
-    console.log(`Error is ${error}`);
+    throw error;
   }
 };
 
@@ -57,6 +62,6 @@ const retrieveData = async () => {
     document.getElementById("content").innerHTML = allData.feel;
     document.getElementById("date").innerHTML = allData.date;
   } catch (error) {
-    console.log(`Error is ${error}`);
+    throw new Error("Error! Something happened during retrieving data");
   }
 };
